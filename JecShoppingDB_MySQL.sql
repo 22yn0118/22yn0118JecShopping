@@ -7,53 +7,59 @@ DROP TABLE IF EXISTS GoodsGroup;
 
 /* 商品分類テーブル */
 CREATE TABLE GoodsGroup(
-    groupcode   INT           NOT NULL  PRIMARY KEY,  /* 商品分類コード */
-    groupname   NVARCHAR(50)  NOT NULL                /* 分類名 */
+    groupcode   INT      NOT NULL  PRIMARY KEY,  /* 商品分類コード */
+    groupname   TEXT     NOT NULL                /* 分類名 */
 );
 
 /* 商品テーブル */
 CREATE TABLE Goods(
-    goodscode   CHAR(5)       NOT NULL  PRIMARY KEY,        /* 商品コード */
-    goodsname   NVARCHAR(50)  NOT NULL,                     /* 商品名 */
-    price       INT           NOT NULL  CHECK(price >= 0),  /* 商品単価 */
-    detail      NVARCHAR(MAX),                              /* 詳細情報 */
-    groupcode   INT           NOT NULL REFERENCES GoodsGroup(groupcode),  /* 商品分類コード */
-    recommend   BIT           NOT NULL,                     /* おすすめ商品:1, 通常商品:0 */
-    goodsimage  VARCHAR(20),                                /* 商品イメージ(ファイル名) */
+    goodscode   CHAR(5)  NOT NULL  PRIMARY KEY,        /* 商品コード */
+    goodsname   TEXT     NOT NULL,                     /* 商品名 */
+    price       INT      NOT NULL  CHECK(price >= 0),  /* 商品単価 */
+    detail      TEXT,                                  /* 詳細情報 */
+    groupcode   INT      NOT NULL,                     /* 商品分類コード */
+    recommend   BIT      NOT NULL,                     /* おすすめ商品:1, 通常商品:0 */
+    goodsimage  TEXT,                                  /* 商品イメージ(ファイル名) */
+    FOREIGN KEY(groupcode) REFERENCES GoodsGroup(groupcode)
 );
 
 /* 会員テーブル */
 CREATE TABLE Member(
-    memberid    INT           NOT NULL  IDENTITY(1,1)  PRIMARY KEY,  /* 会員ID */
-    email       VARCHAR(50)   NOT NULL  UNIQUE,       /* メールアドレス */
-    membername  NVARCHAR(50)  NOT NULL,               /* 会員名 */
-    zipcode     VARCHAR(8)    NOT NULL,               /* 郵便番号 */
-    address     NVARCHAR(100) NOT NULL,               /* 会員住所 */
-    tel         VARCHAR(20),                          /* 電話番号 */
-    password    VARCHAR(255)  NOT NULL,               /* パスワード */
+    memberid    INT      NOT NULL  AUTO_INCREMENT PRIMARY KEY,  /* 会員ID */
+    email       TEXT     NOT NULL  UNIQUE,             /* メールアドレス */
+    membername  TEXT     NOT NULL,                     /* 会員名 */
+    zipcode     TEXT     NOT NULL,                     /* 郵便番号 */
+    address     TEXT     NOT NULL,                     /* 会員住所 */
+    tel         TEXT,                                  /* 電話番号 */
+    password    TEXT     NOT NULL                      /* パスワード */
 );
 
 /* カートテーブル */
 CREATE TABLE Cart(
-    memberid    INT           NOT NULL  REFERENCES Member(memberid), /* 会員ID */
-    goodscode   CHAR(5)       NOT NULL  REFERENCES Goods(goodscode), /* 商品コード */
-    num         INT           NOT NULL  CHECK(num > 0),              /* 商品個数 */
-    PRIMARY KEY(memberid, goodscode)
+    memberid    INT      NOT NULL  REFERENCES Member(memberid), /* 会員ID */
+    goodscode   CHAR(5)  NOT NULL  REFERENCES Goods(goodscode), /* 商品コード */
+    num         INT      NOT NULL  CHECK(num > 0),              /* 商品個数 */
+    PRIMARY KEY(memberid, goodscode),
+    FOREIGN KEY(memberid)  REFERENCES Member(memberid),
+    FOREIGN KEY(goodscode) REFERENCES Goods(goodscode)
 );
 
 /* 売上テーブル */
 CREATE TABLE Sale(
-    saleno      INT           NOT NULL  IDENTITY(1,1)  PRIMARY KEY,  /* 売上番号 */
-    saledate    DATETIME      NOT NULL,                              /* 売上日時 */
-    memberid    INT           NOT NULL  REFERENCES Member(memberid)  /* 会員ID */
+    saleno      INT      NOT NULL  AUTO_INCREMENT PRIMARY KEY,  /* 売上番号 */
+    saledate    DATETIME NOT NULL,                              /* 売上日時 */
+    memberid    INT      NOT NULL,                              /* 会員ID */
+    FOREIGN KEY(memberid) REFERENCES Member(memberid)
 );
 
 /* 売上詳細テーブル */
 CREATE TABLE SaleDetail(
-    saleno      INT           NOT NULL  REFERENCES Sale(saleno),     /* 売上番号 */
-    goodscode   CHAR(5)       NOT NULL  REFERENCES Goods(goodscode), /* 商品コード */
-    num         INT           NOT NULL  CHECK(num > 0),              /* 販売個数 */
-    PRIMARY KEY(saleno, goodscode)
+    saleno      INT      NOT NULL,                              /* 売上番号 */
+    goodscode   CHAR(5)  NOT NULL,                              /* 商品コード */
+    num         INT      NOT NULL  CHECK(num > 0),              /* 販売個数 */
+    PRIMARY KEY(saleno, goodscode),
+    FOREIGN KEY(saleno)    REFERENCES Sale(saleno),
+    FOREIGN KEY(goodscode) REFERENCES Goods(goodscode)
 );
 
 /* 商品分類テーブルのデータ */

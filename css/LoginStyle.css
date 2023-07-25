@@ -1,0 +1,21 @@
+#LoginTable
+{
+    float: left;
+}
+
+.box
+{
+    margin-left: 10px;
+    margin-right: 30px;
+    margin-bottom: 30px;
+    padding: 5px;
+    border: 1px solid #000000;
+}
+
+table th
+{
+    background-color: green;
+    color: #ffffff;
+    text-align: center;
+
+}
